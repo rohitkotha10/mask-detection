@@ -27,7 +27,6 @@ images_names = list(paths.list_images(dataset_path))
 image_data = []
 image_labels = []
 
-i = 0
 for cur in images_names:
     label = cur.split(os.path.sep)[-2]
     image = load_img(cur, target_size=(224, 224))
