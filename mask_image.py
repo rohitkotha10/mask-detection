@@ -3,7 +3,12 @@ from keras_preprocessing.image.utils import img_to_array
 from keras.models import load_model
 import numpy as np
 import cv2
+import argparse
 import os
+
+ap = argparse.ArgumentParser()
+ap.add_argument("-i", "--image", required=True,
+	help="path to input image")
 
 protxt = "face_detector\\deploy.prototxt"
 faceWeights = "face_detector\\res10_300x300_ssd_iter_140000.caffemodel"
@@ -12,7 +17,7 @@ net = cv2.dnn.readNet(protxt, faceWeights)
 
 model = load_model("mask_detector.model")
 
-image = cv2.imread("img.jpg")
+image = cv2.imread(args["image"])
 orig = image.copy()
 (h, w) = image.shape[:2]
 
