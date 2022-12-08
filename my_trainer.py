@@ -13,8 +13,7 @@ from keras_preprocessing.image.utils import load_img
 from keras.utils import to_categorical
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import numpy as np
 from imutils import paths
 import os
@@ -46,6 +45,7 @@ image_labels = to_categorical(image_labels)
 (trainX, testX, trainY, testY) = train_test_split(
     image_data, image_labels, test_size=0.20, stratify=image_labels, random_state=42)
 
+# generate some more random samples
 aug = ImageDataGenerator(rotation_range=20,
                          zoom_range=0.15,
                          width_shift_range=0.2,
@@ -76,8 +76,7 @@ BS = 32
 opt = Adam(lr=INIT_LR, decay=INIT_LR / EPOCHS)
 model.compile(loss="binary_crossentropy", optimizer=opt,
               metrics=["accuracy"])
-# train the head of the network
-print("[INFO] training head...")
+
 H = model.fit(
     aug.flow(trainX, trainY, batch_size=BS),
     steps_per_epoch=len(trainX) // BS,
@@ -85,17 +84,8 @@ H = model.fit(
     validation_steps=len(testX) // BS,
     epochs=EPOCHS)
 
-# make predictions on the testing set
-print("[INFO] evaluating network...")
 predIdxs = model.predict(testX, batch_size=BS)
-# for each image in the testing set we need to find the index of the
-# label with corresponding largest predicted probability
 predIdxs = np.argmax(predIdxs, axis=1)
-# show a nicely formatted classification report
-print(classification_report(testY.argmax(axis=1), predIdxs,
-                            target_names=lb.classes_))
-# serialize the model to disk
-print("[INFO] saving mask detector model...")
 model.save(model_path, save_format="h5")
 
 N = EPOCHS
